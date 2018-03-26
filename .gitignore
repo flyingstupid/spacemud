@@ -3,3 +3,5 @@ bin/addr_server
 bin/portbind
 bin/nohup.out
 lib/log/*
+lib/tmp_eval_file.c
+lib/u/*
