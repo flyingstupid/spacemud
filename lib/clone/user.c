@@ -8,6 +8,7 @@ inherit BASE;
 
 private
 string name;
+string password;
 
 // replace this with a functioning version.
 
@@ -32,9 +33,29 @@ string query_name()
 
 void set_name(string arg)
 {
-    //  may wish to add security to prevent just anyone from changing
-    //  someone else's name.
-    name = arg;
+    // for now only the login file can set a user's name
+    if (explode(file_name(this_player()), "#")[0] == "/clone/login")
+        name = arg;
+}
+
+string query_password()
+{
+    return password;
+}
+
+void set_password(string arg)
+{
+    password = arg;
+}
+
+void save()
+{
+    save_object(user_data_file(query_name()) + ".o");
+}
+
+void restore()
+{
+    restore_object(user_data_file(query_name()) + ".o");
 }
 
 // called by the present() efun (and some others) to determine whether
@@ -101,7 +122,7 @@ void init()
     // action for those verbs without an explicitly associated action).
     if (this_object() == this_player())
     {
-		add_action("helpHook", "help", 1);
+        add_action("helpHook", "help", 1);
         add_action("commandHook", "", 1);
     }
 }
