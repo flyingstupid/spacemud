@@ -17,8 +17,9 @@
 #define VIRTUAL_D  "/single/virtual"
 
 #define LOGIN_OB   "/clone/login"
-#define USER_OB    "/clone/user"
+#define USER_OB    "/std/user/user"
 #define VOID_OB    "/single/void"
+#define ROOM_BASE  "/std/room/room_base"
 
 #define ROOT_UID     "Root"
 #define BACKBONE_UID "Backbone"

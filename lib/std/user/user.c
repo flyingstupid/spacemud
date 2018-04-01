@@ -9,12 +9,13 @@ inherit BASE;
 private
 string name;
 string password;
+string cwd;
 
 // replace this with a functioning version.
 
 string query_cwd()
 {
-    return "";
+    return cwd;
 }
 
 // logon: move this to /single/login.c when login.c gets written.

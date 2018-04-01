@@ -1,6 +1,5 @@
 #include <globals.h>
 
-// needs fixed to handle passwords
 #define NO_ECHO 1
 #define NO_BYPASS 2
 
@@ -59,7 +58,7 @@ void get_name(string arg)
         }
     }
 
-    err = catch (user = new ("/clone/user"));
+    err = catch (user = new (USER_OB));
 
     if (err)
     {
