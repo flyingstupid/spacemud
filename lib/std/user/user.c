@@ -1,9 +1,3 @@
-// mudlib:   Lil
-// file:     user.c
-// purpose:  is the representation of an interactive (user) in the MUD
-
-#include <globals.h>
-
 inherit BASE;
 
 private
@@ -153,6 +147,8 @@ void setup()
     set_living_name(query_name());
     enable_commands();
     add_action("commandHook", "", 1);
+	if(!cwd || cwd == "")
+		cwd = user_data_path(query_name()) + "/";
 }
 
 // net_dead: called by the gamedriver when an interactive player loses
