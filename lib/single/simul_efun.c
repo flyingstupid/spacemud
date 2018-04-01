@@ -141,81 +141,6 @@ string dump_variable(mixed arg)
     }
 }
 
-/*
-// Thanks to Huthar for resolve_path.
-// Rewrite by Symmetry 5/4/95
-*/
-
-string resolve_path(string curr, string newer)
-{
-    int i, j, size;
-    string *tmp;
-
-    switch (newer)
-    {
-    case 0:
-    case ".":
-        return curr;
-
-    case "here":
-        return file_name(environment()) + ".c";
-
-    default:
-        if (newer[0..1] == "~/")
-            newer = user_path((string)this_player()->query_name()) + newer[2..];
-        else
-        {
-            switch (newer[0])
-            {
-            case '~':
-            {
-                i = strsrch(newer, '/');
-                if (i < 0)
-                    newer = user_path(newer[1..]);
-                else
-                    newer = user_path(newer[1..i - 1]) + newer[i..];
-                break;
-            }
-            case '/':
-                break;
-            default:
-                newer[ < 0.. < 1] = curr + "/";
-            }
-        }
-
-        if (newer[ < 1] != '/')
-            newer += "/";
-        size = sizeof(tmp = regexp(explode(newer, "/"), "."));
-
-        i = j = 0;
-
-        while (i < size)
-        {
-            switch (tmp[i])
-            {
-            case "..":
-                if (j)
-                {
-                    while (j-- && !tmp[j])
-                        ;
-                    if (j >= 0)
-                        tmp[j] = 0;
-                    else
-                        j++;
-                }
-            case ".":
-                tmp[i++] = 0;
-                break;
-
-            default:
-                j = ++i;
-                break;
-            }
-        }
-        return "/" + implode(tmp, "/");
-    }
-}
-
 // domain_file:
 // should return the domain associated with a given file.
 string domain_file(string)
@@ -238,7 +163,10 @@ string author_file(string)
 }
 
 #include "/single/simul_efun/exists.c"
+#include "/single/simul_efun/resolve_path.c"
 #include "/single/simul_efun/user.c"
+#include "/single/simul_efun/strings.c"
+#include "/single/simul_efun/math.c"
 
 
 void simul()
