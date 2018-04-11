@@ -82,10 +82,64 @@ int commandHook(string arg)
     }
     else
     {
+		movementHook(cmd_path);
         // maybe call an emote/soul daemon here
     }
     return 0;
 }
+
+
+int movementHook (string arg)
+{
+	/*
+	switch(cmd_path)
+	{
+		case "n":	cmd_path = "north";
+			break;
+		
+		case "s": 	cmd_path = "south"; 
+			break;
+		
+		case "e":	cmd_path = "east"; 
+			break;
+		
+		case "w":	cmd_path = "west"; 
+			break;
+		
+		case "se":	cmd_path = "southeast"; 
+			break;
+		
+		case "sw":	cmd_path = "southwest"; 
+			break;
+		
+		case "ne":	cmd_path = "northeast"; 
+			break;
+		
+		case "nw":	cmd_path = "northwest"; 
+			break;
+		
+		case "u":	cmd_path = "up"; 
+			break;
+		
+		case "d":	cmd_path = "down"; 
+			break;
+		
+		default:  
+			break;
+	}
+	*/
+	
+    mapping room_exits = environment(this_player())->query_exits();
+	tell_object(this_player(), "Arg : " + arg);
+	if( member_array(arg,keys(environment(this_player())->query_exits())) != 1 )
+	{
+		this_player()->move(room_exits[arg][0]);
+		return 1;
+	}
+	
+	return 0;
+}
+
 
 int helpHook(string arg)
 {
@@ -118,7 +172,7 @@ void init()
     if (this_object() == this_player())
     {
         add_action("helpHook", "help", 1);
-        add_action("commandHook", "", 1);
+		add_action("commandHook", "", 1);
     }
 }
 
