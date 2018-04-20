@@ -5,6 +5,9 @@ string name;
 string password;
 string cwd;
 
+mapping aliasmap;
+mapping envmap;
+
 // replace this with a functioning version.
 
 string query_cwd()
@@ -43,6 +46,25 @@ void set_password(string arg)
     password = arg;
 }
 
+void set_env(string key, mixed value)
+{
+    if(!envmap)
+        envmap = ([]);
+    envmap[key] = value;
+}
+
+mixed query_env(string key)
+{
+    if(!envmap || !member_array(key, keys(envmap)) == -1)
+        return 0;
+    return envmap[key];
+}
+
+void remove_env(string key)
+{
+    map_delete(envmap, key);
+}
+
 void save()
 {
     save_object(user_data_file(query_name()) + ".o");
@@ -51,6 +73,20 @@ void save()
 void restore()
 {
     restore_object(user_data_file(query_name()) + ".o");
+   
+    //temp
+    if(!aliasmap)
+    {
+        aliasmap = ([]);
+        aliasmap += ([ "n":"north" ]);
+        aliasmap += ([ "s":"south" ]);
+        aliasmap += ([ "e":"east" ]);
+        aliasmap += ([ "w":"west" ]);
+        aliasmap += ([ "ne":"northeast" ]);
+        aliasmap += ([ "se":"southeast" ]);
+        aliasmap += ([ "nw":"northwest" ]);
+        aliasmap += ([ "sw":"southwest" ]);
+    }
 }
 
 // called by the present() efun (and some others) to determine whether
@@ -62,10 +98,40 @@ int id(string arg)
 }
 
 // preprocess input
-string process_input(string arg)
+string process_input(string input)
 {
-    // possible to modify player input here before driver parses it.
-    return arg;
+    string verb;
+    string arg;
+
+    if(sscanf(input, "%s %s", verb, arg) != 2)
+    {
+        verb = input;
+        arg = 0;
+    }
+   
+    if(query_env("alias_debug"))
+    {
+        tell_object(this_player(), "#######PreProcess#######\n");
+        tell_object(this_player(), "Verb: " + verb + "\n");
+        tell_object(this_player(), "Arg: " + arg + "\n");
+    }
+
+    if(aliasmap && member_array(verb, keys(aliasmap)) != -1)
+    {
+        verb = aliasmap[verb];
+    }
+
+    if(query_env("alias_debug"))
+    {
+        tell_object(this_player(), "#######PostProcess#######\n");
+        tell_object(this_player(), "Verb: " + verb + "\n");
+        tell_object(this_player(), "Arg: " + arg + "\n");
+    }
+
+    if(arg)
+        return verb + " " + arg;
+
+    return verb;
 }
 
 int commandHook(string arg)
@@ -82,62 +148,9 @@ int commandHook(string arg)
     }
     else
     {
-		movementHook(cmd_path);
         // maybe call an emote/soul daemon here
     }
     return 0;
-}
-
-
-int movementHook (string arg)
-{
-	/*
-	switch(cmd_path)
-	{
-		case "n":	cmd_path = "north";
-			break;
-		
-		case "s": 	cmd_path = "south"; 
-			break;
-		
-		case "e":	cmd_path = "east"; 
-			break;
-		
-		case "w":	cmd_path = "west"; 
-			break;
-		
-		case "se":	cmd_path = "southeast"; 
-			break;
-		
-		case "sw":	cmd_path = "southwest"; 
-			break;
-		
-		case "ne":	cmd_path = "northeast"; 
-			break;
-		
-		case "nw":	cmd_path = "northwest"; 
-			break;
-		
-		case "u":	cmd_path = "up"; 
-			break;
-		
-		case "d":	cmd_path = "down"; 
-			break;
-		
-		default:  
-			break;
-	}
-	*/
-	
-    mapping room_exits = environment(this_player())->query_exits();
-	tell_object(this_player(), "Arg : " + arg);
-	if( member_array(arg,keys(environment(this_player())->query_exits())) != 1 )
-	{
-		this_player()->move(room_exits[arg][0]);
-		return 1;
-	}
-	
-	return 0;
 }
 
 
@@ -172,8 +185,9 @@ void init()
     if (this_object() == this_player())
     {
         add_action("helpHook", "help", 1);
-		add_action("commandHook", "", 1);
+        add_action("commandHook", "", 1);
     }
+   
 }
 
 // create: called by the driver after an object is compiled.
@@ -200,9 +214,10 @@ void setup()
     seteuid(getuid(this_object()));
     set_living_name(query_name());
     enable_commands();
+    add_action("helpHook", "help", 1);
     add_action("commandHook", "", 1);
-	if(!cwd || cwd == "")
-		cwd = user_data_path(query_name()) + "/";
+    if(!cwd || cwd == "")
+        cwd = user_data_path(query_name()) + "/";
 }
 
 // net_dead: called by the gamedriver when an interactive player loses
