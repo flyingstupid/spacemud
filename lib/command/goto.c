@@ -2,13 +2,19 @@
 
 int main(string arg)
 {
-	if(!arg || arg == "")
-	{
-		write("Usage: goto <path>\n");
-		return 1;
-	}
+    object room;
 
-	
-	this_player()->move(arg);
+    if(!arg || arg == "")
+    {
+        write("Usage: goto <path>\n");
+        return 1;
+    }
+
+    this_player()->move(arg);
+    room = environment(this_player());
+    if(room)
+    {
+        write(room->render_room());
+    }
     return 1;
 }

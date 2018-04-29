@@ -10,6 +10,6 @@ void init()
     // this should result in north leading to /single/void.c
     add_exit("north", "/single/void2.c");
     remove_exit("north");
-    add_exit("north", "/single/void.c");
-    add_exit("north", "/single/void2.c");
+    add_exit("north", "/areas/test/testroom2.c");
+    add_exit("east","/areas/test/testroom3.c");
 }
