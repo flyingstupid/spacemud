@@ -136,10 +136,17 @@ string process_input(string input)
 
 int movementHook (string arg)
 {
-    string cmd = query_verb();
+    string cmd;
     object room;
-    mapping roomExitsArray = environment(this_player())->query_exits();
-    if( member_array(cmd,keys(environment(this_player())->query_exits())) != -1 )
+    mapping roomExitsArray;
+    
+    cmd = query_verb();
+    roomExitsArray = environment(this_player())->query_exits();
+
+    if(!roomExitsArray)
+        return 0;
+
+    if(member_array(cmd,keys(roomExitsArray)) != -1)
     {
         this_player()->move(roomExitsArray[cmd][0]);
         room = environment(this_player());
