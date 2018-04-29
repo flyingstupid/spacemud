@@ -134,6 +134,25 @@ string process_input(string input)
     return verb;
 }
 
+int movementHook (string arg)
+{
+    string cmd = query_verb();
+    object room;
+    mapping roomExitsArray = environment(this_player())->query_exits();
+    if( member_array(cmd,keys(environment(this_player())->query_exits())) != -1 )
+    {
+        this_player()->move(roomExitsArray[cmd][0]);
+        room = environment(this_player());
+        if(room)
+        {
+           tell_object(this_player(),room->render_room());
+        }
+        return 1;
+    }
+    return 0;
+}
+
+
 int commandHook(string arg)
 {
     string cmd_path;
@@ -148,6 +167,12 @@ int commandHook(string arg)
     }
     else
     {
+        // Would just make this return the func, but if the soul daemon
+        // needs a hook, better make it inside an if. 
+        if(movementHook(cmd_path))
+        {
+            return 1;
+        }
         // maybe call an emote/soul daemon here
     }
     return 0;

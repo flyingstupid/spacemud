@@ -48,17 +48,17 @@ void set_name(string _name)
 int remove_exit(string exit)
 {
     if (member_array(exit, keys(exits)) >= 0)
-	{
+    {
         map_delete(exits, exit);
-		return 1;
-	}
-	return 0;
+        return 1;
+    }
+    return 0;
 }
 
 //--------------------------------------------------
 int add_exit(string exit, string path)
 {
-	if(!exits) exits = ([]);
+    if(!exits) exits = ([]);
     // don't allow overwriting exits
     if (member_array(exit, keys(exits)) >= 0)
         return 0;
@@ -71,7 +71,7 @@ int add_exit(string exit, string path)
 //--------------------------------------------------
 mapping query_exits()
 {
-	return ([]) + exits;
+    return ([]) + exits;
 }
 
 //--------------------------------------------------
