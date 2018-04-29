@@ -73,7 +73,7 @@ int movementHook (string arg)
     string cmd = query_verb();
     object room;
     mapping roomExitsArray = environment(this_player())->query_exits();
-    if( member_array(cmd,keys(environment(this_player())->query_exits())) != 1 )
+    if( member_array(cmd,keys(environment(this_player())->query_exits())) != -1 )
     {
         this_player()->move(roomExitsArray[cmd][0]);
         room = environment(this_player());
