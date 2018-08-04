@@ -13,10 +13,10 @@ int main(string file)
 
     obj = load_object(file);
 
-	if(obj)
-		write("[SUCCESS]\n");
-	else
-		write("[FAILURE]\n");
+    if(obj)
+        write("[SUCCESS]\n");
+    else
+        write("[FAILURE]\n");
 
     return 1;
 }
