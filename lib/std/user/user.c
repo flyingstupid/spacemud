@@ -4,6 +4,7 @@ private
 string name;
 string password;
 string cwd;
+string path;
 
 mapping aliasmap;
 mapping envmap;
@@ -164,24 +165,34 @@ int commandHook(string arg)
 {
     string cmd_path;
     object cobj;
+    string *paths;
+    int sPaths;
+
+    paths = explode(path, ";");
+    sPaths = sizeof(paths);
 
     cmd_path = COMMAND_PREFIX + query_verb();
-
-    cobj = load_object(cmd_path);
-    if (cobj)
+    for(int i = 0; i < sPaths; ++i)
     {
-        return (int)cobj->main(arg);
+        cmd_path = paths[i] + query_verb();
+        cobj = load_object(cmd_path);
+        if (cobj)
+        {
+            // If we find the command object always let that handle the command
+            return (int)cobj->main(arg);
+        }
+    }
+
+    // if there was nothing in our path then try other hooks
+    if(movementHook(cmd_path))
+    {
+        return 1;
     }
     else
     {
-        // Would just make this return the func, but if the soul daemon
-        // needs a hook, better make it inside an if. 
-        if(movementHook(cmd_path))
-        {
-            return 1;
-        }
         // maybe call an emote/soul daemon here
     }
+
     return 0;
 }
 
@@ -198,11 +209,28 @@ int helpHook(string arg)
     {
         return (int)cobj->help(arg);
     }
-    else
-    {
-        // maybe call an emote/soul daemon here
-    }
     return 0;
+}
+
+void add_path(string newPath)
+{
+    string *paths;
+    int sPaths;
+        
+    paths = explode(path, ";");
+    sPaths = sizeof(paths);
+
+    if(newPath[<1] != '/')
+        newPath = newPath + "/";
+
+    for(int i = 0; i < sPaths; ++i)
+    {
+        if(paths[i] == newPath)
+            return;
+    }
+
+    paths += ({ newPath });
+    path = implode(paths, ";");
 }
 
 // init: called by the driver to give the object a chance to add some
@@ -219,13 +247,14 @@ void init()
         add_action("helpHook", "help", 1);
         add_action("commandHook", "", 1);
     }
-   
+
 }
 
 // create: called by the driver after an object is compiled.
 
 void create()
 {
+
     seteuid(0); // so that login.c can export uid to us
 }
 
@@ -250,6 +279,18 @@ void setup()
     add_action("commandHook", "", 1);
     if(!cwd || cwd == "")
         cwd = user_data_path(query_name()) + "/";
+    if(!path || path == "")
+    {
+        path = "";
+        add_path("/command/std/");
+
+        // TODO Lock these behind a permissions check
+        add_path("/command/build/");
+        add_path("/command/admin/");
+        add_path("/command/file/");
+        add_path("/command/wiz/");
+    }
+
 }
 
 // net_dead: called by the gamedriver when an interactive player loses
